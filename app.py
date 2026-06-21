@@ -1,7 +1,13 @@
-
 import math
 import random
 import streamlit as st
+
+# Fikstür listesi
+maclar = ["Galatasaray - Fenerbahçe", "Beşiktaş - Trabzonspor", "Başakşehir - Kasımpaşa"]
+secilen_mac = st.selectbox("Bugünün Maçları", maclar)
+
+
+
 
 # ── page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -455,115 +461,3 @@ if analyse_main or analyse or "result" in st.session_state:
               <div class="card-title">1️⃣ Maç Sonucu (1X2)</div>
               {bar_html(f'1 — {h_name}', r["pct_1"], "#39FF14", p1_best)}
               {bar_html('X — Beraberlik',  r["pct_x"], "#FFD700", px_best)}
-              {bar_html(f'2 — {a_name}', r["pct_2"], "#FF6B35", p2_best)}
-            </div>""", unsafe_allow_html=True)
-        with d2:
-            st.markdown(f"""<div class="card">
-              <div class="card-title">🎯 KG — İki Takım da Atar</div>
-              {bar_html('KG VAR (GG)', r["btts"],    "#39FF14", r["btts"] >= r["no_btts"])}
-              {bar_html('KG YOK (NG)', r["no_btts"], "#FF4C4C", r["no_btts"] > r["btts"])}
-              <div class="card-sub" style="margin-top:14px">
-                {h_name}: <b>%{round((1-math.exp(-h_xg))*100)}</b> gol atma ihtimali<br>
-                {a_name}: <b>%{round((1-math.exp(-a_xg))*100)}</b> gol atma ihtimali
-              </div>
-            </div>""", unsafe_allow_html=True)
-
-        # ── Over / Under ──────────────────────────────────────────────────────
-        st.markdown('<div class="sec-header">GOL HATTI (ÜST / ALT)</div>',
-                    unsafe_allow_html=True)
-        e1, e2, e3 = st.columns(3)
-        lines = [
-            (e1, "1.5", r["over15"], r["under15"]),
-            (e2, "2.5", r["over25"], r["under25"]),
-            (e3, "3.5", r["over35"], r["under35"]),
-        ]
-        for col, line, ov, un in lines:
-            ov_best = ov >= un
-            with col:
-                st.markdown(f"""<div class="card">
-                  <div class="card-title">⚽ {line} Gol Hattı</div>
-                  {bar_html(f'{line} Üst', ov, "#39FF14", ov_best)}
-                  {bar_html(f'{line} Alt', un, "#888",    not ov_best)}
-                </div>""", unsafe_allow_html=True)
-
-        # ── TGS ───────────────────────────────────────────────────────────────
-        st.markdown('<div class="sec-header">📊 TOPLAM GOL ARALIĞI (TGS)</div>',
-                    unsafe_allow_html=True)
-
-        tgs_colors = {
-            "0-1 Gol": "#4FC3F7",
-            "2-3 Gol": "#39FF14",
-            "4-6 Gol": "#FFD700",
-            "7+ Gol":  "#FF4C4C",
-        }
-        tgs_html = ""
-        for label, pct in r["tgs"].items():
-            is_best = label == r["tgs_best"]
-            tgs_html += bar_html(label, pct, tgs_colors[label], is_best)
-
-        st.markdown(f"""<div class="card">
-          <div class="card-title">Gol Aralığı Dağılımı</div>
-          {tgs_html}
-          <div class="card-sub" style="margin-top:14px">
-            En olası aralık: <b style="color:#39FF14">{r['tgs_best']}</b>
-            &nbsp;—&nbsp; Poisson(λ={r['lam']:.2f})
-          </div>
-        </div>""", unsafe_allow_html=True)
-
-        # ── Ana Öneri ─────────────────────────────────────────────────────────
-        st.markdown('<div class="sec-header">ANA ÖNERİ</div>', unsafe_allow_html=True)
-
-        all_picks = [
-            (f"1 — {h_name}",   r["pct_1"]),
-            ("X — Beraberlik",   r["pct_x"]),
-            (f"2 — {a_name}",   r["pct_2"]),
-            ("2.5 Üst" if r["over25"] >= r["under25"] else "2.5 Alt",
-             r["over25"] if r["over25"] >= r["under25"] else r["under25"]),
-            ("KG VAR" if r["btts"] >= r["no_btts"] else "KG YOK",
-             r["btts"] if r["btts"] >= r["no_btts"] else r["no_btts"]),
-            (r["tgs_best"], r["tgs"][r["tgs_best"]]),
-        ]
-        best_label, best_pct = max(all_picks, key=lambda x: x[1])
-
-        f1, f2, f3 = st.columns(3)
-        with f1:
-            ou_label = "2.5 Üst" if r["over25"] >= r["under25"] else "2.5 Alt"
-            ou_pct   = r["over25"] if r["over25"] >= r["under25"] else r["under25"]
-            st.markdown(f"""<div class="best-pick">
-              <div class="best-pick-label">Gol Hattı</div>
-              <div class="best-pick-value">{ou_label}</div>
-              <div class="best-pick-pct">%{ou_pct}</div>
-            </div>""", unsafe_allow_html=True)
-        with f2:
-            st.markdown(f"""<div class="best-pick" style="border-color:#FFD700;background:linear-gradient(135deg,#2a2000,#0d0d0d)">
-              <div class="best-pick-label" style="color:#FFD700">⭐ En Güçlü Öneri</div>
-              <div class="best-pick-value">{best_label}</div>
-              <div class="best-pick-pct" style="color:#FFD700">%{best_pct}</div>
-            </div>""", unsafe_allow_html=True)
-        with f3:
-            kg_label = "KG VAR (GG)" if r["btts"] >= r["no_btts"] else "KG YOK (NG)"
-            kg_pct   = r["btts"] if r["btts"] >= r["no_btts"] else r["no_btts"]
-            st.markdown(f"""<div class="best-pick">
-              <div class="best-pick-label">Karşılıklı Gol</div>
-              <div class="best-pick-value">{kg_label}</div>
-              <div class="best-pick-pct">%{kg_pct}</div>
-            </div>""", unsafe_allow_html=True)
-
-        # ── pill summary ──────────────────────────────────────────────────────
-        st.markdown('<div class="sec-header">ÖZET</div>', unsafe_allow_html=True)
-        pills = (
-            pill("1.5 Üst" if r["over15"] >= r["under15"] else "1.5 Alt",
-                 r["over15"] if r["over15"] >= r["under15"] else r["under15"],
-                 r["over15"] >= r["under15"]) +
-            pill("2.5 Üst" if r["over25"] >= r["under25"] else "2.5 Alt",
-                 r["over25"] if r["over25"] >= r["under25"] else r["under25"],
-                 r["over25"] >= r["under25"]) +
-            pill("3.5 Üst" if r["over35"] >= r["under35"] else "3.5 Alt",
-                 r["over35"] if r["over35"] >= r["under35"] else r["under35"],
-                 r["over35"] >= r["under35"]) +
-            pill("KG VAR" if r["btts"] >= r["no_btts"] else "KG YOK",
-                 r["btts"] if r["btts"] >= r["no_btts"] else r["no_btts"],
-                 r["btts"] >= r["no_btts"]) +
-            pill(r["tgs_best"], r["tgs"][r["tgs_best"]], True)
-        )
-        st.markdown
