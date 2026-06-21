@@ -5,7 +5,15 @@ import streamlit as st
 # Fikstür listesi
 maclar = ["Galatasaray - Fenerbahçe", "Beşiktaş - Trabzonspor", "Başakşehir - Kasımpaşa"]
 secilen_mac = st.selectbox("Bugünün Maçları", maclar)
-
+# Selectbox ile seçilen maçı takımlara ayır
+if secilen_mac:
+    takimlar = secilen_mac.split(" - ")
+    # Eğer "Takım1 - Takım2" formatı doğruysa
+    if len(takimlar) == 2:
+        # Session state kullanarak kutucuklara otomatik değer ata
+        st.session_state.home_name = takimlar[0]
+        st.session_state.away_name = takimlar[1]
+        
 # --- page config ---
 st.set_page_config(
     page_title="GolMetrik",
@@ -455,9 +463,11 @@ if analyse_main or analyse or "result" in st.session_state:
             p1_best = r["pct_1"] == win_pct
             px_best = r["pct_x"] == win_pct
             p2_best = r["pct_2"] == win_pct
-            st.markdown(f"""<div class="card">
+                        st.markdown(f"""<div class="card">
     <div class="card-title">1️⃣ Maç Sonucu (1X2)</div>
-    {bar_html(...)}
-    {bar_html(...)}
-""", unsafe_allow_html=True)
+    {bar_html(f'1 — {h_name}', r["pct_1"], "#39FF14", p1_best)}
+    {bar_html('X — Beraberlik', r["pct_x"], "#FFD700", px_best)}
+    {bar_html(f'2 — {a_name}', r["pct_2"], "#39FF14", p2_best)}
+</div>""", unsafe_allow_html=True)
+            
             
