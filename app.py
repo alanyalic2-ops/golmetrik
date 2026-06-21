@@ -456,17 +456,39 @@ if analyse_main or analyse or "result" in st.session_state:
 
         st.markdown('<div class="sec-header">TAHMİN ANALİZİ</div>', unsafe_allow_html=True)
 
-        # ── 1X2 + BTTS ────────────────────────────────────────────────────────
-        d1, d2 = st.columns(2)
-with d1:
-    win_pct = max(r["pct_1"], r["pct_x"], r["pct_2"])
-    p1_best = r["pct_1"] == win_pct
-    px_best = r["pct_x"] == win_pct
-    p2_best = r["pct_2"] == win_pct
-    st.markdown(f"""<div class="card">
-    <div class="card-title">1️⃣ Maç Sonucu (1X2)</div>
-    {bar_html(f'1 — {h_name}', r["pct_1"], "#39FF14", p1_best)}
-    {bar_html('X — Beraberlik', r["pct_x"], "#FFD700", px_best)}
-    {bar_html(f'2 — {a_name}', r["pct_2"], "#39FF14", p2_best)}
-</div>""", unsafe_allow_html=True)
+            # — 1X2 + BTTS + GOL ANALİZLERİ —
+    d1, d2 = st.columns(2)
     
+    with d1:
+        # 1X2 Kartı
+        win_pct = max(r["pct_1"], r["pct_x"], r["pct_2"])
+        st.markdown(f"""<div class="card">
+    <div class="card-title">1️⃣ Maç Sonucu (1X2)</div>
+    {bar_html(f'1 — {h_name}', r["pct_1"], "#39FF14", r["pct_1"] == win_pct)}
+    {bar_html('X — Beraberlik', r["pct_x"], "#FFD700", r["pct_x"] == win_pct)}
+    {bar_html(f'2 — {a_name}', r["pct_2"], "#39FF14", r["pct_2"] == win_pct)}
+</div>""", unsafe_allow_html=True)
+        
+        # KG Var/Yok Kartı
+        st.markdown(f"""<div class="card" style="margin-top:10px;">
+    <div class="card-title">🎯 KG (İki Takım da Atar)</div>
+    {bar_html('KG VAR (GG)', r["btts_yes"], "#39FF14", r["btts_yes"] > 50)}
+    {bar_html('KG YOK (NG)', 100-r["btts_yes"], "#FF4B4B", (100-r["btts_yes"]) > 50)}
+</div>""", unsafe_allow_html=True)
+
+    with d2:
+        # Gol Alt/Üst Kartı
+        st.markdown(f"""<div class="card">
+    <div class="card-title">⚽ Gol (Üst / Alt)</div>
+    {bar_html('2.5 Üst', r["over_2_5"], "#39FF14", r["over_2_5"] > 50)}
+    {bar_html('2.5 Alt', 100-r["over_2_5"], "#FF4B4B", (100-r["over_2_5"]) > 50)}
+</div>""", unsafe_allow_html=True)
+
+        # TGS Kartı
+        st.markdown(f"""<div class="card" style="margin-top:10px;">
+    <div class="card-title">📊 Toplam Gol Aralığı</div>
+    {bar_html('0-1 Gol', r["tgs_01"], "#FFD700", False)}
+    {bar_html('2-3 Gol', r["tgs_23"], "#39FF14", r["tgs_23"] > 40)}
+    {bar_html('4-6 Gol', r["tgs_46"], "#FFD700", False)}
+</div>""", unsafe_allow_html=True)
+        
