@@ -458,16 +458,16 @@ if analyse_main or analyse or "result" in st.session_state:
 
         # ── 1X2 + BTTS ────────────────────────────────────────────────────────
         d1, d2 = st.columns(2)
-        with d1:
+                with d1:
             win_pct = max(r["pct_1"], r["pct_x"], r["pct_2"])
             p1_best = r["pct_1"] == win_pct
             px_best = r["pct_x"] == win_pct
             p2_best = r["pct_2"] == win_pct
-                        st.markdown(f"""<div class="card">
+            # Şuradaki st.markdown tam olarak 'with'in altına gelmeli
+            st.markdown(f"""<div class="card">
     <div class="card-title">1️⃣ Maç Sonucu (1X2)</div>
     {bar_html(f'1 — {h_name}', r["pct_1"], "#39FF14", p1_best)}
     {bar_html('X — Beraberlik', r["pct_x"], "#FFD700", px_best)}
     {bar_html(f'2 — {a_name}', r["pct_2"], "#39FF14", p2_best)}
 </div>""", unsafe_allow_html=True)
-            
-            
+                    
