@@ -456,6 +456,8 @@ if analyse_main or analyse or "result" in st.session_state:
             px_best = r["pct_x"] == win_pct
             p2_best = r["pct_2"] == win_pct
             st.markdown(f"""<div class="card">
-              <div class="card-title">1️⃣ Maç Sonucu (1X2)</div>
-              {bar_html(f'1 — {h_name}', r["pct_1"], "#39FF14", p1_best)}
-              {bar_html('X — Beraberlik',  r["pct_x"], "#FFD700", px_best)}
+    <div class="card-title">1️⃣ Maç Sonucu (1X2)</div>
+    {bar_html(...)}
+    {bar_html(...)}
+""", unsafe_allow_html=True)
+            
