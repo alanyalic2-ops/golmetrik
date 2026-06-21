@@ -6,10 +6,7 @@ import streamlit as st
 maclar = ["Galatasaray - Fenerbahçe", "Beşiktaş - Trabzonspor", "Başakşehir - Kasımpaşa"]
 secilen_mac = st.selectbox("Bugünün Maçları", maclar)
 
-
-
-
-# ── page config ───────────────────────────────────────────────────────────────
+# --- page config ---
 st.set_page_config(
     page_title="GolMetrik",
     page_icon="⚽",
@@ -17,10 +14,11 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ── global CSS ────────────────────────────────────────────────────────────────
+# --- global CSS ---
 st.markdown("""
 <style>
 /* ---- global resets ---- */
+
 html, body, [data-testid="stAppViewContainer"] {
     background-color: #0d0d0d;
 }
